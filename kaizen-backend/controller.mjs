@@ -41,24 +41,24 @@ const new_task = await Task.create({
    })
 }
 
- export async function deleteTask (task_id) {
-    const deleted_task = await Task.destroy({task_id: task_id})
+ export async function deleteTask (task_id_num) {
+    const deleted_task = await Task.destroy({where:{task_id: task_id_num}})
     .catch((err)=>{
         console.log(err)
        })
     console.log(deleted_task)
 }
 
-export async function deleteProject(project_id) {
-    const deleted_project = await Project.destroy({project_id: project_id})
+export async function deleteProject(project_id_num) {
+    const deleted_project = await Project.destroy({where:{project_id: project_id_num}})
     .catch((err)=>{
         console.log(err)
        })
     console.log(deleted_project)
 }
 
-export async function deleteUser (user_id ){
-    const deleted_user = await User.destroy({user_id: user_id})
+export async function deleteUser (user_id_num){
+    const deleted_user = await User.destroy({where:{user_id: user_id_num}})
     .catch((err)=>{
         console.log(err)
        })
