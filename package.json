@@ -52,9 +52,11 @@
     "safe-buffer": "^5.2.1",
     "safer-buffer": "^2.1.2",
     "send": "^0.18.0",
+    "sequelize": "^6.25.3",
     "serve-static": "^1.15.0",
     "setprototypeof": "^1.2.0",
     "side-channel": "^1.0.4",
+    "sqlite3": "^5.1.2",
     "statuses": "^2.0.1",
     "toidentifier": "^1.0.1",
     "type-is": "^1.6.18",
@@ -69,6 +71,9 @@
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {},
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "eslint": "^8.26.0",
+    "eslint-config-google": "^0.14.0"
+  }
 }
