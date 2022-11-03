@@ -4,7 +4,6 @@ import {sequelize}  from "./db_init.mjs";
 import {User} from "./user.mjs"
 import {Project} from "./project.mjs"
 import {Task} from "./task.mjs"
-import dotenv from 'dotenv';
 import {createAssociations} from "./associations.mjs"
 
 
