@@ -41,8 +41,9 @@ const new_task = await Task.create({
    })
 }
 
- export async function deleteTask (task_id) {
-    const deleted_task = await Task.destroy({task_id: task_id})
+
+ export async function deleteTask (task_id_num) {
+    const deleted_task = await Task.destroy({where:{task_id: task_id_num}})
     .catch((err)=>{
         console.log(err)
        })
