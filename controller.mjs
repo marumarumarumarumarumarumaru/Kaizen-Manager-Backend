@@ -3,11 +3,11 @@ import {User} from './models/user.mjs'
 import {Project} from './models/project.mjs'
 
 // Todo - Refactor into separate controller files in controllers directory. e.g. controllers/project.controller.mjs
-export async function createProject (project_name, project_type, project_owner){
+export async function createProject (project_name, project_owner, user_id){
     return await Project.create({
         project_name: project_name,
-        project_type: project_type,
-        project_owner: project_owner
+        project_owner: project_owner,
+        uaer_id: user_id
 }).catch((err)=>{
     console.log(err)
    })
@@ -24,13 +24,14 @@ export async function createUser (f_name, l_name, email_name) {
     })
 }
 
-export async function createTask (task_name, task_type, task_owner, task_descriptions, task_status){
+export async function createTask (task_name, task_owner, task_value, task_status, task_descriptions, date_ended=0 ){
     return await Task.create({
         task_name: task_name,
-        task_type: task_type,
         task_owner: task_owner,
+        task_value: task_value,
         task_descriptions: task_descriptions,
-        task_status: task_status
+        task_status: task_status,
+        date_ended: date_ended
     }).catch((err)=>{
         console.log(err)
     })
@@ -75,9 +76,7 @@ export async function updateUser(user_id, user_obj){
     //maybe parse object for nulls here and pass in resultant object
 
     User.update(
-        {first_name: user_obj.first_name,
-        last_name: user_obj.last_name,
-        email: user_obj.email},
+       user_obj,
         { where: { user_id: user_id } })
         .catch((err)=>{
             console.log(err)

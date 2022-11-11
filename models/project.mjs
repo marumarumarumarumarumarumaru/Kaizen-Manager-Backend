@@ -9,9 +9,9 @@ export const Project =  sequelize.define('Project', {
       primaryKey: true,
       autoIncrement: true,
     },
+  
    project_name: DataTypes.STRING,
    project_owner: DataTypes.STRING,
-   project_type: DataTypes.STRING,
    date_created: DataTypes.DATE,
    date_updated: DataTypes.DATE
   },
