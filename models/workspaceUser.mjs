@@ -1,14 +1,14 @@
 import {sequelize} from "./db_init.mjs"
 import { DataTypes } from "sequelize"
 
-export const projectUser = sequelize.define('projectUser',{
-
+export const workspaceUser = sequelize.define('workspaceUser',{
+  role_name: DataTypes.STRING,
   },
-  { 
+  {
     // options
     sequelize,
-    modelName: 'projectUser',
-    tableName: 'projectUser',
+    modelName: 'workspaceUser',
+    tableName: 'workspaceUser',
     createdAt: 'date_created',
     updatedAt: 'date_updated',
     underscore: true,

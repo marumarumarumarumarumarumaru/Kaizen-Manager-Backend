@@ -2,7 +2,7 @@
 import { Sequelize, DataTypes } from "sequelize"
 import {sequelize} from "./db_init.mjs"
 
-export const Workspace =  sequelize.define('Project', {
+export const Workspace =  sequelize.define('Workspace', {
     workspace_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,

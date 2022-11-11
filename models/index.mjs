@@ -6,43 +6,55 @@ import {Project} from "../models/project.mjs"
 import {Task} from "../models/task.mjs"
 import {Workspace} from "../models/workspace.mjs"
 import {projectUser} from "../models/projectUser.mjs"
-import {createAssociations} from "./associations.mjs"
+import {workspaceUser} from "../models/workspaceUser.mjs"
 
 
+// M:M project and user
+Project.belongsToMany(User, {
+    through: "projectUser",
+    foreignKey: "user_id"
+  });
+  
+  User.belongsToMany(Project, {
+    through: "projectUser",
+    foreignKey: "project_id"
+  });
+
+
+  //M2M workspace to user
+
+  Workspace.belongsToMany(User, {
+    through: "workspaceUser",
+    foreignKey: "user_id"
+  });
+  
+  User.belongsToMany(Workspace, {
+    through: "workspaceUser",
+    foreignKey: "workspace_id"
+  });
+  
+  // O:M project to task
+  Task.belongsTo(Project, {
+    allowNull: false
+  });
+  Project.hasMany(Task);
+  
+  //O:M workspace to project
+  Project.belongsTo(Workspace)
+  Workspace.hasMany(Project)
 
 export const db = {};
+
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
-
 db.user = User;
 db.project = Project;
 db.task = Task;
 db.projectUser = projectUser
 db.workspace = Workspace
+db.workspaceUser = workspaceUser
 
-// createAssociations(db)
 
-// M:M project and user
-db.project.belongsToMany(db.user, {
-    through: "projectUser",
-    foreignKey: "user_id"
-  });
-  
-  db.user.belongsToMany(db.project, {
-    through: "projectUser",
-    foreignKey: "project_id"
-  });
-  // O:M project to task
-  db.task.belongsTo(db.project);
-  db.project.hasMany(db.task, {
-    as: "tasks"
-  });
-  
-  //O:M workspace to project
-  db.project.belongsTo(db.workspace)
-  db.workspace.hasMany(db.project)
 
-  db.sequelize.sync().then(()=> {
-    console.log("syncing db")
-  });
+await db.sequelize.sync({ force: true });
   
