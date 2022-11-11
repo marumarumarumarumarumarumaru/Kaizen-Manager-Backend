@@ -105,6 +105,10 @@ export async function readTask(){
   
 }
 
+export async function readWorkspace(){
+    
+}
+
 
 
 

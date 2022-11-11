@@ -15,10 +15,13 @@ db.user.belongsToMany(db.project, {
 });
 // O:M project to task
 db.task.belongsTo(db.project);
-
 db.project.hasMany(db.task, {
   as: "tasks"
 });
+
+//O:M workspace to project
+db.project.belongsTo(db.Workspace)
+db.workspace.hasMany(db.project)
 
 db.sequelize.sync().then(()=> {
   console.log("syncing db")
