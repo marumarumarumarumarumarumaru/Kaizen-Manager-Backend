@@ -20,7 +20,7 @@ export const User = sequelize.define('User',{
     tableName: 'User',
     createdAt: 'date_created',
     updatedAt: 'date_updated',
-    underscore: true,
+    underscored: true,
   },
   )
 

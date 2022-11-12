@@ -11,6 +11,6 @@ export const projectUser = sequelize.define('projectUser',{
     tableName: 'projectUser',
     createdAt: 'date_created',
     updatedAt: 'date_updated',
-    underscore: true,
+    underscored: true,
   },
   )

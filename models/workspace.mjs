@@ -8,6 +8,7 @@ export const Workspace =  sequelize.define('Workspace', {
       primaryKey: true,
       autoIncrement: true,
     },
+    
    workspace_name: DataTypes.STRING,
    date_created: DataTypes.DATE,
    date_updated: DataTypes.DATE
@@ -19,6 +20,6 @@ export const Workspace =  sequelize.define('Workspace', {
     tableName: 'Workspace',
     createdAt: 'date_created',
     updatedAt: 'date_updated',
-    underscore: true,
+    underscored: true,
   },
 )

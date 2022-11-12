@@ -1,37 +1,75 @@
 import {Task} from './models/task.mjs'
 import {User} from './models/user.mjs'
 import {Project} from './models/project.mjs'
+import { Workspace } from './models/workspace.mjs'
+import { workspaceUser } from './models/workspaceUser.mjs'
+import { projectUser } from './models/projectUser.mjs'
 
 // Todo - Refactor into separate controller files in controllers directory. e.g. controllers/project.controller.mjs
-export async function createProject (project_name, project_owner, user_id){
-    return await Project.create({
-        project_name: project_name,
-        project_owner: project_owner,
-        uaer_id: user_id
-}).catch((err)=>{
-    console.log(err)
-   })
+export async function createProject (project_obj){
+    console.log("---------------------------------------------")
+    console.log(project_obj)
+    console.log("---------------------------------------------")
+    await Project.create({
+        project_name: project_obj.project_name,
+        project_owner: project_obj.use_id,
+        work_id: project_obj.work_id
+        }).catch((err)=>{
+            console.log(err)
+        })
+   await projectUser.create({
+    use_id: project_obj.use_id,
+    role: "owner",
+    proj_id: 145325 // need to get the newly created project id here
+    }).catch((err)=>{
+        console.log(err)
+    })
+    }
+
+export async function createWorkspace (workspace_obj ){
+    console.log("---------------------------------------------")
+    console.log(workspace_obj)
+    console.log("---------------------------------------------")
+    await Workspace.create({
+        workspace_name: workspace_obj.workspace_name}
+        ).catch((err)=>{
+            console.log(err)
+    })
+    await workspaceUser.create({
+        use_id: workspace_obj.use_id,//CPK
+        role_name: "owner",
+        work_id: 666666// need to get the newly created workspace id here CPK
+    }).catch((err)=>{
+        console.log(err)
+})
 }
 
-
-export async function createUser (f_name, l_name, email_name) {
+export async function createUser (user_obj) {
+    console.log("---------------------------------------------")
+    console.log(user_obj)
+    console.log("---------------------------------------------")
     return await User.create({
-        first_name: f_name,
-        last_name: l_name,
-        email: email_name
+        first_name: user_obj.first_name,
+        last_name: user_obj.last_name,
+        email: user_obj.email
     }).catch((err) => {
         console.log(err)
     })
 }
 
-export async function createTask (task_name, task_owner, task_value, task_status, task_descriptions, date_ended=0 ){
+export async function createTask (task_obj){
+    console.log("---------------------------------------------")
+    console.log(task_obj)
+    console.log("---------------------------------------------")
     return await Task.create({
-        task_name: task_name,
-        task_owner: task_owner,
-        task_value: task_value,
-        task_descriptions: task_descriptions,
-        task_status: task_status,
-        date_ended: date_ended
+        proj_id: task_obj.proj_id, //FK
+        task_assignee: task_obj.use_id, //FK
+        task_name: task_obj.task_name,
+        task_owner: task_obj.task_owner,
+        task_value: task_obj.task_value,
+        task_descriptions: task_obj.task_descriptions,
+        task_status: task_obj.task_status,
+        date_ended: task_obj.date_ended
     }).catch((err)=>{
         console.log(err)
     })
@@ -72,9 +110,6 @@ updated fields will be changed
 returns: True on success, False on failure
 */
 export async function updateUser(user_id, user_obj){
-
-    //maybe parse object for nulls here and pass in resultant object
-
     User.update(
        user_obj,
         { where: { user_id: user_id } })
@@ -84,6 +119,9 @@ export async function updateUser(user_id, user_obj){
        })
        return true
 }
+
+
+
 
 export async function updateTask(){
     
@@ -107,6 +145,7 @@ export async function readTask(){
 export async function readWorkspace(){
     
 }
+
 
 
 

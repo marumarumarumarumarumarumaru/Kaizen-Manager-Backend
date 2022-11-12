@@ -8,9 +8,12 @@ export const Task = sequelize.define('Task',{
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+    },proj_id: {
+      type: DataTypes.INTEGER,
+      foreignKey: true,
     },
    task_name: DataTypes.STRING,
-   task_owner: DataTypes.STRING,
+   task_assignee: DataTypes.INTEGER,
    task_status: DataTypes.STRING,
    task_value: DataTypes.INTEGER,
    task_descriptions: DataTypes.STRING,
@@ -25,7 +28,7 @@ export const Task = sequelize.define('Task',{
     tableName: 'Task',
     createdAt: 'date_created',
     updatedAt: 'date_updated',
-    underscore: true,
+    underscored: true,
   },
 );
 

@@ -8,6 +8,9 @@ export const Project =  sequelize.define('Project', {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+    },work_id: {
+      type: DataTypes.INTEGER,
+      foreignKey: true,
     },
   
    project_name: DataTypes.STRING,
@@ -22,7 +25,7 @@ export const Project =  sequelize.define('Project', {
     tableName: 'Project',
     createdAt: 'date_created',
     updatedAt: 'date_updated',
-    underscore: true,
+    underscored: true,
   },
 )
 

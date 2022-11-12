@@ -12,36 +12,28 @@ import {workspaceUser} from "../models/workspaceUser.mjs"
 // M:M project and user
 Project.belongsToMany(User, {
     through: "projectUser",
-    foreignKey: "user_id"
   });
   
-  User.belongsToMany(Project, {
-    through: "projectUser",
-    foreignKey: "project_id"
-  });
+
 
 
   //M2M workspace to user
 
-  Workspace.belongsToMany(User, {
-    through: "workspaceUser",
-    foreignKey: "user_id"
-  });
+
   
   User.belongsToMany(Workspace, {
     through: "workspaceUser",
-    foreignKey: "workspace_id"
   });
   
   // O:M project to task
-  Task.belongsTo(Project, {
-    allowNull: false
+  Project.hasMany(Task,{
+    foreignKey: 'proj_id'
   });
-  Project.hasMany(Task);
   
   //O:M workspace to project
-  Project.belongsTo(Workspace)
-  Workspace.hasMany(Project)
+  Workspace.hasMany(Project,{
+    foreignKey: 'work_id'
+  })
 
 export const db = {};
 
