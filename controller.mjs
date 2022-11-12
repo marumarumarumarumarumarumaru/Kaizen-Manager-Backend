@@ -5,7 +5,7 @@ import { Workspace } from './models/workspace.mjs'
 import { workspaceUser } from './models/workspaceUser.mjs'
 import { projectUser } from './models/projectUser.mjs'
 import { sequelize } from './models/db_init.mjs'
-import {JSON, Sequelize} from 'sequelize'
+import { Sequelize} from 'sequelize'
 const Op = Sequelize.Op;
 
 function sleep(milliseconds) {
@@ -34,7 +34,6 @@ export async function createProject (project_obj){
         console.log(JSON.stringify(project))
         console.log(project[0].max_id)
         console.log('--------------------------------------')
-        sleep(1000)
         await projectUser.create({
         user_user_id: project_obj.use_id,
         role: "owner",
@@ -48,21 +47,30 @@ export async function createProject (project_obj){
 
     }
 
-export async function createWorkspace (workspace_obj ){
+export async function createWorkspace (workspace_obj){
     console.log("---------------------------------------------")
     console.log(workspace_obj)
     console.log("---------------------------------------------")
     await Workspace.create({
         workspace_name: workspace_obj.workspace_name}
-        ).catch((err)=>{
-            console.log(err)
+        )
+                //get the next project_id
+    let workspace = await Workspace.findAll({
+        attributes: [[sequelize.fn('MAX', sequelize.col('workspace_id')), 'max_id']],
+        raw: true
     })
+    console.log('--------------------------------------')
+    console.log(JSON.stringify(workspace))
+    console.log(workspace[0].max_id)
+    console.log('--------------------------------------')
     await workspaceUser.create({
         user_user_id: workspace_obj.use_id,//CPK
         role_name: "owner",
-        workspace_workspace_id: 1// need to get the newly created workspace id here CPK
+        workspace_workspace_id: workspace[0].max_id// need to get the newly created workspace id here CPK
     }).catch((err)=>{
         console.log(err)
+}).catch((err)=>{
+    console.log(err)
 })
 }
 
@@ -153,40 +161,86 @@ export async function updateProject(){
 }
 
 export async function readProjects(workspace_id){
-    await Project.findAll({where:{
+    const projects = await Project.findAll({where:{
         work_id:  workspace_id
     }})
-
-  
+    return JSON.stringify(projects)
 }
-async function get_user_ids(user_objs){
+ async function get_user_ids(user_objs){
     let users_in_workspace = []
     for(const user of user_objs){
-        console.log(user)
-    users_in_workspace.push(user.user_id)}
+        console.log("USER ID " + user.user_user_id)
+        users_in_workspace.push(user.user_user_id)
+    }
+    return users_in_workspace
 }
 export async function readUsersWorkspace(workspace_id){
-const user_objs = await workspaceUser.findAll({where:{
-                        workspace_workspace_id: workspace_id
-                    }})
-
-//build list of user_ids in the workspace
-const users_in_workspace = await get_user_ids(user_objs)
-const users = await User.findAll({where:{
-                        user_id:{
-                        [Op.in]: users_in_workspace
-                        } 
-                    }})
+    // get all users that belong to the workspace
+    const user_objs = await workspaceUser.findAll({where:{
+                            workspace_workspace_id: workspace_id
+                        }})
+    console.log(JSON.stringify(user_objs))
+    //build list of user_ids in the workspace
+    const users_in_workspace = await get_user_ids(user_objs)
+    console.log(JSON.stringify(users_in_workspace))
+    //find all user records where user_id is in the workspace
+    const users = await User.findAll({where:{
+                            user_id:{
+                            [Op.in]: users_in_workspace
+                            } 
+                        }}).catch(err =>{
+                            console.log(err)
+                        }).catch(err =>{
+                            console.log(err)
+                        }).catch(err =>{
+                            console.log(err)
+                        })
+    return users
 }
 
 export async function readUsersProject(project_id){
  
 }
 
+async function get_workspace_ids(workspace_objs){
+    let workspaces_for_user = []
+    for(const workspace of workspace_objs){
+        workspaces_for_user.push(workspace.workspace_workspace_id)
+    }
+    return workspaces_for_user
+}
+
+export async function readWorkspaceForUser(user_id){
+        // get all users that belong to the workspace
+        const workspace_objs = await workspaceUser.findAll({where:{
+            user_user_id: user_id
+        }})
+
+    //build list of user_ids in the workspace
+    const workspace_for_user = await get_workspace_ids(workspace_objs)
+    console.log(JSON.stringify(workspace_for_user))
+
+    //find all workspace records where workspace_id is matched to the user
+    const users = await Workspace.findAll({where:{
+            workspace_id:{
+            [Op.in]: workspace_for_user
+            } 
+        }}).catch(err =>{
+            console.log(err)
+        }).catch(err =>{
+            console.log(err)
+        }).catch(err =>{
+            console.log(err)
+        })
+console.log(JSON.stringify(users))
+return users
+}
 export async function readTasks(project_id){
-    Task.findAll({where:{
+    const tasks = await Task.findAll({where:{
         proj_id:  project_id
     }})
+    console.log(JSON.stringify(tasks))
+    return JSON.stringify(tasks)
 }
 
 export async function readWorkspace(){
