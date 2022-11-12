@@ -1,23 +1,44 @@
-import {createTask, createProject, createUser, createWorkspace} from './controller.mjs'
+import {createTask, createProject, createUser, createWorkspace, readProjects, readUsersWorkspace} from './controller.mjs'
+                    
+// for(let i= 0; i < 100; i++){
+//     await createTask({
+//         proj_id: i,
+//         use_id: i+1,
+//         task_name: `taskname${i}`,
+//         task_owner: "corey",
+//         task_status: "complete", 
+//         task_value: i - 2,
+//         date_ended: 0,
+//         task_descriptions:"build a log cabin"
+//     })
+// }
 
-const user  =  createUser({first_name: "corey",
-                            last_name: "gallagher",
-                            email: "email@test.com"})
+// for(let i= 1; i < 100; i++){
+//     await createUser({first_name: `corey${i}`,
+//     last_name: `gallagher${i}`,
+//     email: `corey${i}@gmail.com`})
+// }
 
-const project = createProject({work_id: 17327327,
-                                project_name: "projectname1",
-                                use_id: 1})
+// for(let i= 1; i < 100; i++){
+//     await createWorkspace({workspace_name: `workspacename1${i}`,
+//     use_id: i})
+// }
 
+// for(let i= 1; i < 100; i++){
+//     let use_id = i
+//     let works_id = i % 10
+//     if (works_id == 0){
+//         works_id +=1
+//     }
+//     await createProject({work_id: works_id,
+//         project_name: "projectname1",
+//         use_id: use_id })
+// }
 
-const task = createTask({proj_id: 18239129,
-                        use_id: 49289123,
-                        task_name: "taskname1",
-                        task_owner: "corey",
-                        task_status: "complete", 
-                        task_value: 7,
-                        date_ended: 0,
-                        task_descriptions:"build a log cavbin"})
+for(let i= 1; i < 10; i++){
+    await readProjects(i)
+}
 
-                        
-const workspace = createWorkspace({workspace_name: "taskname1",
-                                    use_id: 1})
+for(let i= 1; i < 10; i++){
+    await readUsersWorkspace(i)
+}
