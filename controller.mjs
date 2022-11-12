@@ -18,9 +18,9 @@ export async function createProject (project_obj){
             console.log(err)
         })
    await projectUser.create({
-    use_id: project_obj.use_id,
+    user_user_id: project_obj.use_id,
     role: "owner",
-    proj_id: 145325 // need to get the newly created project id here
+    project_project_id: 1 // need to get the newly created project id here
     }).catch((err)=>{
         console.log(err)
     })
@@ -36,9 +36,9 @@ export async function createWorkspace (workspace_obj ){
             console.log(err)
     })
     await workspaceUser.create({
-        use_id: workspace_obj.use_id,//CPK
+        user_user_id: workspace_obj.use_id,//CPK
         role_name: "owner",
-        work_id: 666666// need to get the newly created workspace id here CPK
+        workspace_workspace_id: 1// need to get the newly created workspace id here CPK
     }).catch((err)=>{
         console.log(err)
 })
