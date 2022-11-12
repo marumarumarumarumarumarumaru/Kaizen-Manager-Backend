@@ -11,19 +11,27 @@ import {workspaceUser} from "../models/workspaceUser.mjs"
 
 // M:M project and user
 Project.belongsToMany(User, {
-    through: "projectUser",
+    through: "projectUser"
+  });
+
+User.belongsToMany(Project, {
+    through: "projectUser"
   });
   
 
 
 
   //M2M workspace to user
-
+  
+  Workspace.belongsToMany(User, {
+    through: "workspaceUser"
+  });
 
   
   User.belongsToMany(Workspace, {
-    through: "workspaceUser",
+    through: "workspaceUser"
   });
+
   
   // O:M project to task
   Project.hasMany(Task,{
