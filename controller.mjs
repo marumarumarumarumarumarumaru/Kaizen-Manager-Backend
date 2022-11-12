@@ -78,20 +78,22 @@ export async function createUser (user_obj) {
     console.log("---------------------------------------------")
     console.log(user_obj)
     console.log("---------------------------------------------")
-    return await User.create({
+    await User.create({
         first_name: user_obj.first_name,
         last_name: user_obj.last_name,
         email: user_obj.email
     }).catch((err) => {
         console.log(err)
+        return false
     })
+    return true
 }
 
 export async function createTask (task_obj){
     console.log("---------------------------------------------")
     console.log(task_obj)
     console.log("---------------------------------------------")
-    return await Task.create({
+    await Task.create({
         proj_id: task_obj.proj_id, //FK
         task_assignee: task_obj.use_id, //FK
         task_name: task_obj.task_name,
@@ -102,7 +104,9 @@ export async function createTask (task_obj){
         date_ended: task_obj.date_ended
     }).catch((err)=>{
         console.log(err)
+        return false
     })
+    return true
 }
 
 
@@ -218,7 +222,6 @@ export async function readWorkspaceForUser(user_id){
 
     //build list of user_ids in the workspace
     const workspace_for_user = await get_workspace_ids(workspace_objs)
-    console.log(JSON.stringify(workspace_for_user))
 
     //find all workspace records where workspace_id is matched to the user
     const users = await Workspace.findAll({where:{
@@ -234,6 +237,7 @@ export async function readWorkspaceForUser(user_id){
         })
 console.log(JSON.stringify(users))
 return users
+
 }
 export async function readTasks(project_id){
     const tasks = await Task.findAll({where:{

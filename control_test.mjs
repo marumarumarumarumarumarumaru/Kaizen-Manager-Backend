@@ -28,29 +28,29 @@ for(let i= 1; i < 100; i++){
     use_id: use_id % 10})
 }
 
-for(let i= 1; i < 100; i++){
-    let use_id = i
-    let works_id = i % 10
-    if (works_id == 0){
-        works_id +=1
-    }
-    await createProject({work_id: works_id,
-        project_name: "projectname1",
-        use_id: use_id })
-}
+// for(let i= 1; i < 100; i++){
+//     let use_id = i
+//     let works_id = i % 10
+//     if (works_id == 0){
+//         works_id +=1
+//     }
+//     await createProject({work_id: works_id,
+//         project_name: "projectname1",
+//         use_id: use_id })
+// }
 
-for(let i= 1; i < 10; i++){
-    await readProjects(i)
-}
+// for(let i= 1; i < 10; i++){
+//     await readProjects(i)
+// }
 
-for(let i= 1; i < 10; i++){
-    await readUsersWorkspace(i)
-}
+// for(let i= 1; i < 10; i++){
+//     await readUsersWorkspace(i)
+// }
 
-for(let i= 1; i < 10; i++){
-    await readUsersProject(i)
-}
+// for(let i= 1; i < 10; i++){
+//     await readUsersProject(i)
+// }
 
-for(let i=1; i < 10; i++){
-    await readWorkspaceForUser(i)
-}
+// for(let i=1; i < 10; i++){
+//     await readWorkspaceForUser(i)
+// }
