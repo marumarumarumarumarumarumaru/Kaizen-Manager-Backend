@@ -4,24 +4,9 @@ import {User} from "../models/user.mjs"
 import {Project} from "../models/project.mjs"
 import {Task} from "../models/task.mjs"
 import {Workspace} from "../models/workspace.mjs"
-import {projectUser} from "../models/projectUser.mjs"
 import {workspaceUser} from "../models/workspaceUser.mjs"
-
-
-// M:M project and user
-Project.belongsToMany(User, {
-    through: "projectUser"
-  });
-
-User.belongsToMany(Project, {
-    through: "projectUser"
-  });
   
-
-
-
   //M2M workspace to user
-  
   Workspace.belongsToMany(User, {
     through: "workspaceUser"
   });
@@ -40,7 +25,7 @@ User.belongsToMany(Project, {
   //O:M workspace to project
   Workspace.hasMany(Project,{
     foreignKey: 'work_id'
-  })
+  });
 
 export const db = {};
 
@@ -49,10 +34,8 @@ db.sequelize = sequelize;
 db.user = User;
 db.project = Project;
 db.task = Task;
-db.projectUser = projectUser
-db.workspace = Workspace
-db.workspaceUser = workspaceUser
-
+db.workspace = Workspace;
+db.workspaceUser = workspaceUser;
 
 
 await db.sequelize.sync({ force: true });

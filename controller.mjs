@@ -3,7 +3,6 @@ import {User} from './models/user.mjs'
 import {Project} from './models/project.mjs'
 import { Workspace } from './models/workspace.mjs'
 import { workspaceUser } from './models/workspaceUser.mjs'
-import { projectUser } from './models/projectUser.mjs'
 import { sequelize } from './models/db_init.mjs'
 import { Sequelize} from 'sequelize'
 const Op = Sequelize.Op;
@@ -16,26 +15,14 @@ export async function createProject (project_obj){
     console.log("---------------------------------------------")
     await Project.create({
         project_name: project_obj.project_name,
-        project_owner: project_obj.use_id,
         work_id: project_obj.work_id})
-        //get the next project_id
-    let project = await Project.findAll({
-            attributes: [[sequelize.fn('MAX', sequelize.col('project_id')), 'max_id']],
-            raw: true
-        })
-        await projectUser.create({
-        user_user_id: project_obj.use_id,
-        role: "owner",
-        project_project_id: project[0].max_id // need to get the newly created project id here
-            }).catch((err)=>{
-                console.log(err)
-            })
         .catch((err)=>{
             console.log(err)
-        })
-
-    }
-
+            return false
+    })
+    return true
+}
+    
 export async function createWorkspace (workspace_obj){
     console.log("---------------------------------------------")
     console.log(workspace_obj)
@@ -54,9 +41,12 @@ export async function createWorkspace (workspace_obj){
         workspace_workspace_id: workspace[0].max_id// need to get the newly created workspace id here CPK
     }).catch((err)=>{
         console.log(err)
+        return false
 }).catch((err)=>{
     console.log(err)
+    return false
 })
+return true
 }
 
 export async function createUser (user_obj) {
@@ -84,6 +74,7 @@ export async function createTask (task_obj){
         task_name: task_obj.task_name,
         task_owner: task_obj.task_owner,
         task_value: task_obj.task_value,
+        task_due_date: task_obj.task_due_date,
         task_descriptions: task_obj.task_descriptions,
         task_status: task_obj.task_status,
         date_ended: task_obj.date_ended
@@ -94,6 +85,14 @@ export async function createTask (task_obj){
     return true
 }
 
+export async function deleteWorkspace (workspace_id_num) {
+    await Workspace.destroy({where:{workspace_id: workspace_id_num}})
+    .catch((err)=>{
+        console.log(err)
+        return false
+       })
+    return true
+}
 
  export async function deleteTask (task_id_num) {
     await Task.destroy({where:{task_id: task_id_num}})
@@ -155,6 +154,7 @@ export async function readProjects(workspace_id){
     }})
     return JSON.stringify(projects)
 }
+
  async function get_user_ids(user_objs){
     let users_in_workspace = []
     for(const user of user_objs){
@@ -181,12 +181,14 @@ export async function readUsersWorkspace(workspace_id){
                         }).catch(err =>{
                             console.log(err)
                         })
-    return users
+    let array_of_users = []
+    for(const user of users){
+        array_of_users.push(user.dataValues)
+    }
+    console.log(array_of_users)
+    return array_of_users
 }
 
-export async function readUsersProject(project_id){
- 
-}
 
 async function get_workspace_ids(workspace_objs){
     let workspaces_for_user = []
@@ -206,7 +208,7 @@ export async function readWorkspaceForUser(user_id){
     const workspace_for_user = await get_workspace_ids(workspace_objs)
 
     //find all workspace records where workspace_id is matched to the user
-    const users = await Workspace.findAll({where:{
+    const workspaces = await Workspace.findAll({where:{
             workspace_id:{
             [Op.in]: workspace_for_user
             } 
@@ -217,7 +219,12 @@ export async function readWorkspaceForUser(user_id){
         }).catch(err =>{
             console.log(err)
         })
-    return users
+        let array_of_workspaces = []
+        for (const work of workspaces){
+            array_of_workspaces.push(work.dataValues)
+        }
+        console.log(array_of_workspaces)
+    return array_of_workspaces
 
 }
 export async function readTasks(project_id){

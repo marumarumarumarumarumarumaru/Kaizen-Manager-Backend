@@ -1,10 +1,11 @@
-import {createTask, createProject, readUsersProject, createUser, createWorkspace, readProjects, readUsersWorkspace, readWorkspaceForUser} from './controller.mjs'
+import {createTask, createProject, createUser, createWorkspace, readProjects, readUsersWorkspace, readWorkspaceForUser} from './controller.mjs'
                     
 for(let i= 0; i < 20; i++){
     await createTask({
         proj_id: i,
         use_id: i+1,
         task_name: `taskname${i}`,
+        task_due_date: i,
         task_owner: "corey",
         task_status: "complete", 
         task_value: i - 2,
@@ -29,14 +30,12 @@ for(let i= 1; i < 20; i++){
 }
 
 for(let i= 1; i < 20; i++){
-    let use_id = i
     let works_id = i % 10
     if (works_id == 0){
         works_id +=1
     }
     await createProject({work_id: works_id,
-        project_name: "projectname1",
-        use_id: use_id })
+        project_name: `project${i}` })
 }
 
 for(let i= 1; i < 10; i++){
@@ -45,10 +44,6 @@ for(let i= 1; i < 10; i++){
 
 for(let i= 1; i < 10; i++){
     await readUsersWorkspace(i)
-}
-
-for(let i= 1; i < 10; i++){
-    await readUsersProject(i)
 }
 
 for(let i=1; i < 10; i++){
