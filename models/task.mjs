@@ -17,6 +17,7 @@ export const Task = sequelize.define('Task',{
    task_status: DataTypes.STRING,
    task_value: DataTypes.INTEGER,
    task_descriptions: DataTypes.STRING,
+   task_due_date: DataTypes.DATE,
    date_ended: DataTypes.DATE,
    date_created: DataTypes.DATE,
    date_updated: DataTypes.DATE

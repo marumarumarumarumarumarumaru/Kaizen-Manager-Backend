@@ -13,7 +13,6 @@ export const Project =  sequelize.define('Project', {
     },
   
    project_name: DataTypes.STRING,
-   project_owner: DataTypes.STRING,
    date_created: DataTypes.DATE,
    date_updated: DataTypes.DATE
   },
