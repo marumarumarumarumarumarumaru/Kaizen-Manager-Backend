@@ -10,10 +10,10 @@ export const workspaceUser = sequelize.define('workspaceUser',{
   },
   workspace_workspace_id: {
     type: DataTypes.INTEGER,
-    foriegnKey: true
+    foreignKey: true
   }, user_user_id: {
     type: DataTypes.INTEGER,
-    foriegnKey: true
+    foreignKey: true
   },
   role_name: DataTypes.STRING,
   },
