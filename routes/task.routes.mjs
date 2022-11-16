@@ -1,6 +1,6 @@
 import express from 'express';
 
-import {createTask, deleteTask} from "../controller.mjs";
+import {createTask, deleteTask} from "../controllers/task_controller.mjs";
 
 const router = express();
 

@@ -1,6 +1,6 @@
 import express from 'express';
 
-import {createUser, deleteUser} from "../controller.mjs";
+import {createUser, deleteUser} from "../controllers/user_controller.mjs";
 
 const router = express();
 

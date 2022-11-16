@@ -1,6 +1,6 @@
 import express from 'express';
 
-import {createProject, deleteProject} from "../controller.mjs";
+import {createProject, deleteProject} from "../controllers/project_controller.mjs";
 
 const router = express();
 
