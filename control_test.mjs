@@ -85,13 +85,24 @@ async function test_updates(){
     console.log("updated user")
     console.log(await readUsersWorkspace(1))
     console.log('-------------------------------------------------------')
+//create task with date_ended before two weeeks ago
     await createTask({proj_id: 1,
                 task_name: `taskname1`,
                 task_due_date: 2,
                 task_assignee: 1,
                 task_status: "complete", 
                 task_value: 12,
-                date_ended: 0,
+                date_ended: create_date_previous(),
+                task_descriptions:"build a log cabin"
+            })
+// create task with valid end_date
+    await createTask({proj_id: 1,
+                task_name: `taskname1`,
+                task_due_date: 2,
+                task_assignee: 1,
+                task_status: "complete", 
+                task_value: 12,
+                date_ended: Date.now(),
                 task_descriptions:"build a log cabin"
             })
     console.log('original_task')
@@ -102,6 +113,13 @@ async function test_updates(){
     console.log(await readTasks(1))
     console.log('-------------------------------------------------------')
 
+}
+
+//helper function for testing metrics
+function create_date_previous(){
+    let d = new Date()
+    d.setDate(d.getDate()-15)
+    return d
 }
 
 async function test_update_user_role(){
@@ -146,6 +164,16 @@ async function test_delete_cascading_workspace(){
     console.log(await readProjects(1))
     console.log(await readTasks(1))
 }
+
+async function test_metrics(){
+    console.log('tasks in date range')
+    console.log('------------------------------------------')
+    console.log(await readTasksLastTwoWeeks(1))
+    console.log('All tasks')
+    console.log('------------------------------------------')
+    console.log(await readTasks(1))
+}
+
 // these functions are uncommented and run one by one to test functionality 
 // of the db
 
@@ -157,4 +185,5 @@ async function test_delete_cascading_workspace(){
 // create a fresh db for this one
 // test_delete_cascading_workspace()
 // test_reads_user_workspace()
+// test_metrics()
 
