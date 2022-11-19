@@ -1,6 +1,7 @@
 import express from "express";
 
 import {createWorkspace, deleteWorkspace, readWorkspace, updateWorkspace} from "../controllers/workspace_controller.mjs";
+import {readWorkspaceForUser} from "../controllers/workspaceUser_controller.mjs";
 
 const router = express()
 
@@ -72,6 +73,34 @@ router.get('/users/:user_id/workspaces/:workspace_id', function (req, res) {
             } else {
                 res.status(200).json(workspace)
             }
+        })
+})
+
+
+/**
+ * Endpoint to get all workspaces for a specific user
+ *
+ * Request
+ * Parameter passed via URL path
+ * @param user_id
+ *
+ * Response
+ * @returns workspaces - Array<JSON>
+ * {
+ *     workspace_id: workspace id,
+ *     workspace_name: workspace name,
+ *     date_created: date workspace created,
+ *     date_updated: date workspace created
+ * }
+ *
+ * Response Statuses
+ * Success - 200 OK
+ */
+router.get('/users/:user_id/workspaces', function (req, res) {
+    // TODO - PASS JWT AS user_id FOR AUTHORIZATION???
+    readWorkspaceForUser(req.params.user_id)
+        .then(workspaces => {
+            res.status(200).json(workspaces)
         })
 })
 

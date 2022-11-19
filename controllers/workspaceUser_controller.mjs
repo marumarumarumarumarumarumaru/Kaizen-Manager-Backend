@@ -15,7 +15,7 @@ async function get_workspace_ids(workspace_objs) {
 }
 
 export async function readWorkspaceForUser(user_id) {
-    // get all users that belong to the workspace
+    // get all workspaces that belong to the user
     const workspace_objs = await workspaceUser.findAll({
         where: {
             user_user_id: user_id
