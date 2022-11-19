@@ -1,168 +1,178 @@
-import express from 'express';
+import express from 'express'
 
-import {createProject, deleteProject} from "../controllers/project_controller.mjs";
+import {createProject, deleteProject, readProject, readProjects, updateProject} from "../controllers/project_controller.mjs"
 
-const router = express();
+const router = express()
 
 
 /* ------------- Begin Project Endpoint Functions ------------- */
-
 
 /**
  * Endpoint to create a project
  *
  * Request
+ * Parameters passed via URL path
+ * @param user_id
+ * @param workspace_id
+ *
  * Parameters passed via request body
- *
- * Response
- * @returns new project - JSON
- * {
- *
- * }
+ * @param project_name - required
  *
  * Response Statuses
  * Success - 201 Created
  * Failure - 400 Bad Request - Missing a required attribute
  */
-router.post('/projects', function(req, res) {
-    if (req.body.projectName == null ||
-        req.body.projectType == null ||
-        req.body.projectOwner == null) {
+router.post('/users/:user_id/workspaces/:workspace_id/projects', function (req, res) {
+    // TODO - VERIFY USER HAS PERMISSION TO CREATE PROJECTS IN THIS WORKSPACE??
+    if (req.body.project_name == null) {
         res.status(400).json({
                 'Error':
                     'The request object is missing at ' +
                     'least one of the required attributes',
             },
-        );
+        )
     } else {
-        createProject(req.body.projectName, req.body.projectType, req.body.projectOwner)
-            .then((newProject) => {
-                res.status(201).json(newProject.dataValues);
-            });
+        createProject({
+            project_name: req.body.project_name,
+            work_id: req.params.workspace_id
+        })
+            .then(() => {
+                res.status(201).send()
+            })
     }
-});
-
-
-/**
- * Endpoint to get all projects
- *
- * Request
- * No parameters required
- *
- * Response
- * @returns projects - Array<JSON>
- * {
- *     firstName: project first name,
- *     lastName: project last name,
- *     email: project email,
- *     self: URL to get project
- * }
- *
- * Response Statuses
- * Success - 200 OK
- */
-// router.get('/projects', function(req, res) {
-//     getProjects(req).then((projects) => {
-//         res.status(200).json(projects);
-//     });
-// });
+})
 
 
 /**
  * Endpoint to get a specific project
  *
  * Request
- * Parameter passed via URL path
- * @param id
+ * Parameters passed via URL path
+ * @param user_id
+ * @param workspace_id
+ * @param project_id
  *
  * Response
  * @returns project - JSON
  * {
- *     firstName: project first name,
- *     lastName: project last name,
- *     email: project email,
- *     self: URL to get project
+ *     project_id: project id,
+ *     project_name: project name,
+ *     work_id: workspace id (foreign key),
+ *     date_created: date project created,
+ *     date_updated: date project created
  * }
  *
  * Response Statuses
  * Success - 200 OK
  * Failure - 404 Not Found
  */
-// router.get('/projects/:id', function(req, res) {
-//     getProject(req.params.id)
-//         .then((project) => {
-//             if (!project) {
-//                 res.status(404).json({'Error': 'No project with this project id exists'});
-//             } else {
-//                 const formattedProject = formatProject(req, project);
-//                 res.status(200).json(formattedProject);
-//             }
-//         });
-// });
+router.get('/users/:user_id/workspaces/:workspace_id/projects/:project_id', function (req, res) {
+    // TODO - SEE ABOVE
+    readProject(req.params.workspace_id, req.params.project_id)
+        .then(project => {
+            if (!project) {
+                res.status(404).json({'Error': 'No project with this project id exists'})
+            } else {
+                res.status(200).json(project)
+            }
+        })
+})
+
+
+/**
+ * Endpoint to get all projects for a workspace
+ *
+ * Request
+ * Parameters passed via URL path
+ * @param user_id
+ * @param workspace_id
+ *
+ * Response
+ * @returns projects - Array<JSON>
+ * {
+ *     project_id: project id,
+ *     project_name: project name,
+ *     work_id: workspace id (foreign key),
+ *     date_created: date project created,
+ *     date_updated: date project created
+ * }
+ *
+ * Response Statuses
+ * Success - 200 OK
+ * Failure - 404 Not Found
+ */
+router.get('/users/:user_id/workspaces/:workspace_id/projects', function (req, res) {
+    // TODO - SEE ABOVE
+    readProjects(req.params.workspace_id)
+        .then(projects => {
+            res.status(200).json(projects)
+        })
+})
 
 
 /**
  * Endpoint to edit a project
  *
  * Request
- * Parameter passed via URL path
- * @param id
+ * Parameters passed via URL path
+ * @param user_id
+ * @param workspace_id
+ * @param project_id
  *
  * Parameters passed via request body
- * @param firstName
- * @param lastName
- * @param email
+ * @param project_name - optional
  *
  * Response
- * @returns updated project - JSON
- * {
- *     firstName: updated project first name,
- *     lastName: updated project last name,
- *     email: updated project email,
- *     self: URL to get updated project
- * }
+ * @returns boolean
  *
  * Response Statuses
  * Success - 200 OK
  * Failure - 404 Not Found
  */
-// router.patch('/projects/:id', function(req, res) {
-//     editProject(req.params.id, req.body.firstName, req.body.lastName, req.body.email)
-//         .then((updatedProject) => {
-//             if (!updatedProject) {
-//                 res.status(404).json({'Error': 'No project with this project id exists'});
-//             } else {
-//                 const formattedProject = formatProject(req, updatedProject);
-//                 res.status(200).json(formattedProject);
-//             }
-//         });
-// });
+router.patch('/users/:user_id/workspaces/:workspace_id/projects/:project_id', function(req, res) {
+    // TODO - SEE ABOVE
+    const projectObj = {}
+
+    if (req.body.project_name) {
+        projectObj.project_name = req.body.project_name
+    }
+
+    updateProject(req.params.project_id, projectObj)
+        .then(success => {
+            if (success) {
+                res.status(200).json(success)
+            } else {
+                res.status(404).json({'Error': 'No project with this project id exists'})
+            }
+        })
+})
 
 
 /**
  * Endpoint to delete a project
  *
  * Parameter passed via URL path
- * @param - id
- *
- * Response
- * None
+ * @param - user_id
+ * @param - workspace_id
+ * @param - project_id
  *
  * Response Statuses
  * Success - 204 No Content
  * Failure - 404 Not Found
  */
-router.delete('/projects/:id', function(req, res) {
-    deleteProject(req.params.id).then((result) => {
-        if (result) {
-            res.status(204).end();
-        } else {
-            res.status(404).json({'Error': 'No project with this project id exists'});
-        }
-    });
-});
-
+router.delete('/users/:user_id/workspaces/:workspace_id/projects/:project_id', function (req, res) {
+    // TODO - SEE ABOVE
+    deleteProject(req.params.project_id)
+        .then(success => {
+            if (success) {
+                res.status(204).send()
+            } else {
+                res.status(404).json({'Error': 'No project with this project id exists'})
+            }
+        })
+})
 
 /* ------------- End Endpoint Functions ------------- */
 
-export {router};
+
+export {router}
