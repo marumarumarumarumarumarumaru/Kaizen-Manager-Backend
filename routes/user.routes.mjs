@@ -1,6 +1,6 @@
 import express from 'express'
 
-import {createUser, deleteUser, readUser, updateUser} from "../controllers/user_controller.mjs"
+import {createUser, deleteUser, readUser, readUsers, updateUser} from "../controllers/user_controller.mjs"
 import {readUsersWorkspace} from "../controllers/workspaceUser_controller.mjs";
 
 const router = express()
@@ -49,7 +49,7 @@ router.post('/users', function (req, res) {
  *
  * Request
  * Parameter passed via URL path
- * @param id
+ * @param user_id
  *
  * Response
  * @returns user - JSON
@@ -66,8 +66,8 @@ router.post('/users', function (req, res) {
  * Success - 200 OK
  * Failure - 404 Not Found
  */
-router.get('/users/:id', function (req, res) {
-    readUser(req.params.id)
+router.get('/users/:user_id', function (req, res) {
+    readUser(req.params.user_id)
         .then(user => {
             if (!user) {
                 res.status(404).json({'Error': 'No user with this user id exists'})
@@ -79,7 +79,7 @@ router.get('/users/:id', function (req, res) {
 
 
 /**
- * Endpoint to get all users that belong to a workspace
+ * Endpoint to get all users
  *
  * Request
  * No parameters required
@@ -99,14 +99,41 @@ router.get('/users/:id', function (req, res) {
  * Success - 200 OK
  * Failure - 403 Forbidden - The user doesn't have permission to view users of other workspaces
  */
+router.get('/users', function (req, res) {
+    readUsers()
+        .then(users => {
+            res.status(200).json(users)
+        })
+})
+
+
+/**
+ * Endpoint to get all users that belong to a workspace
+ *
+ * Parameters passed via URL path
+ * @param - user_id
+ * @param - workspace_id
+ *
+ * Response
+ * @returns users - Array<JSON>
+ * {
+ *     user_id: user id,
+ *     first_name: user first name,
+ *     last_name: user last name,
+ *     email: user email,
+ *     date_created: date user created,
+ *     date_updated: date user created
+ * }
+ *
+ * Response Statuses
+ * Success - 200 OK
+ * Failure - 403 Forbidden - The user doesn't have permission to view users of other workspaces
+ */
 router.get('/users/:user_id/workspaces/:workspace_id/users', function (req, res) {
+    // TODO - ADD AUTH
     readUsersWorkspace(req.params.workspace_id)
         .then(users => {
-            if (users.some(user => user.user_user_id === req.params.user_id)) {
-                res.status(200).json(users)
-            } else {
-                res.status(403).send()
-            }
+            res.status(200).json(users)
     })
 })
 
@@ -116,7 +143,7 @@ router.get('/users/:user_id/workspaces/:workspace_id/users', function (req, res)
  *
  * Request
  * Parameter passed via URL path
- * @param id
+ * @param user_id
  *
  * Parameters passed via request body
  * @param first_name - optional
@@ -130,7 +157,7 @@ router.get('/users/:user_id/workspaces/:workspace_id/users', function (req, res)
  * Success - 200 OK
  * Failure - 404 Not Found
  */
-router.patch('/users/:id', function (req, res) {
+router.patch('/users/:user_id', function (req, res) {
     const userObj = {}
 
     // Parse the request body to get only the attributes that are being updated
@@ -144,7 +171,7 @@ router.patch('/users/:id', function (req, res) {
         userObj.email = req.body.email
     }
 
-    updateUser(req.params.id, userObj)
+    updateUser(req.params.user_id, userObj)
         .then(success => {
             if (success) {
                 res.status(200).json(success)
@@ -159,14 +186,14 @@ router.patch('/users/:id', function (req, res) {
  * Endpoint to delete a user
  *
  * Parameter passed via URL path
- * @param - id
+ * @param - user_id
  *
  * Response Statuses
  * Success - 204 No Content
  * Failure - 404 Not Found
  */
-router.delete('/users/:id', function (req, res) {
-    deleteUser(req.params.id)
+router.delete('/users/:user_id', function (req, res) {
+    deleteUser(req.params.user_id)
         .then(success => {
             if (success) {
                 res.status(204).end()
