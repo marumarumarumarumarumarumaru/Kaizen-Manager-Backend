@@ -3,15 +3,16 @@ import {Workspace} from '../models/workspace.mjs'
 import {workspaceUser} from '../models/workspaceUser.mjs'
 import {sequelize} from '../models/db_init.mjs'
 import {Sequelize} from 'sequelize'
+import {readUser} from "./user_controller.mjs";
+import {readWorkspace} from "./workspace_controller.mjs";
 
 const Op = Sequelize.Op;
 
-async function get_workspace_ids(workspace_objs) {
-    let workspaces_for_user = []
-    for (const workspace of workspace_objs) {
-        workspaces_for_user.push(workspace.workspace_workspace_id)
-    }
-    return workspaces_for_user
+async function get_user_workspace(workspace_obj) {
+    const user_workspace = await readWorkspace(workspace_obj.workspace_workspace_id)
+    user_workspace.dataValues.user_role = workspace_obj.role_name
+
+    return user_workspace
 }
 
 export async function readWorkspaceForUser(user_id) {
@@ -22,29 +23,13 @@ export async function readWorkspaceForUser(user_id) {
         }
     })
 
-    //build list of user_ids in the workspace
-    const workspace_for_user = await get_workspace_ids(workspace_objs)
+    const array_of_workspaces = []
 
-    //find all workspace records where workspace_id is matched to the user
-    const workspaces = await Workspace.findAll({
-        where: {
-            workspace_id: {
-                [Op.in]: workspace_for_user
-            }
-        }
-    }).catch(err => {
-        console.log(err)
-    }).catch(err => {
-        console.log(err)
-    }).catch(err => {
-        console.log(err)
-    })
-    let array_of_workspaces = []
-    for (const work of workspaces) {
-        array_of_workspaces.push(work.dataValues)
+    for (const workspace_obj of workspace_objs) {
+        array_of_workspaces.push(await get_user_workspace(workspace_obj))
     }
-    return array_of_workspaces
 
+    return array_of_workspaces
 }
 
 
@@ -76,12 +61,11 @@ export async function deleteUserFromWorkspace(user_id, workspace_id) {
     return true
 }
 
-async function get_user_ids(user_objs) {
-    let users_in_workspace = []
-    for (const user of user_objs) {
-        users_in_workspace.push(user.user_user_id)
-    }
-    return users_in_workspace
+async function get_workspace_user(user_obj) {
+    const workspace_user = await readUser(user_obj.user_user_id)
+    workspace_user.dataValues.user_role = user_obj.role_name
+
+    return workspace_user
 }
 
 export async function readUsersWorkspace(workspace_id) {
@@ -91,26 +75,13 @@ export async function readUsersWorkspace(workspace_id) {
             workspace_workspace_id: workspace_id
         }
     })
-    //build list of user_ids in the workspace
-    const users_in_workspace = await get_user_ids(user_objs)
-    //find all user records where user_id is in the workspace
-    const users = await User.findAll({
-        where: {
-            user_id: {
-                [Op.in]: users_in_workspace
-            }
-        }
-    }).catch(err => {
-        console.log(err)
-    }).catch(err => {
-        console.log(err)
-    }).catch(err => {
-        console.log(err)
-    })
-    let array_of_users = []
-    for (const user of users) {
-        array_of_users.push(user.dataValues)
+
+    const array_of_users = []
+
+    for (const user_obj of user_objs) {
+        array_of_users.push(await get_workspace_user(user_obj))
     }
+
     return array_of_users
 }
 

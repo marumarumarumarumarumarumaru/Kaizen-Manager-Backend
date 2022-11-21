@@ -45,3 +45,7 @@ export async function readUser(user_id) {
 
     return result[0]
 }
+
+export async function readUsers() {
+    return await User.findAll()
+}
