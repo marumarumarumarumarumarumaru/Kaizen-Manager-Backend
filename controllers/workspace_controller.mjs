@@ -58,3 +58,8 @@ export async function readWorkspace(workspace_id) {
     })
     return result[0]
 }
+
+// For Testing Only
+export async function readAllWorkspaces() {
+    return await Workspace.findAll()
+}

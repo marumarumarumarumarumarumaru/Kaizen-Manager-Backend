@@ -4,7 +4,7 @@
 
 # Use the official lightweight Node.js 10 image.
 # https://hub.docker.com/_/node
-FROM node:18-slim
+FROM node:16
 
 # Create and change to the app directory.
 WORKDIR /app
@@ -21,6 +21,16 @@ RUN npm install --production
 
 # Copy local code to the container image.
 COPY . ./
+
+ENV PORT=8080
+ENV DB_USER='root'
+ENV DB_PASS=''
+ENV DB_NAME='kaizen-manager-database'
+ENV INSTANCE_CONNECTION_NAME='kaizen-manager-backend:us-central1:kaizen-manager-database'
+ENV GOOGLE_APPLICATION_CREDENTIALS='./kaizen-manager-backend-ffb3df357ace.json'
+ENV CLOUD_DEPLOYMENT='true'
+
+EXPOSE ${PORT}
 
 # Run the web service on container startup.
 CMD [ "npm", "start" ]

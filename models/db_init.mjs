@@ -1,7 +1,7 @@
 import Sequelize from "sequelize"
 
 
-export const sequelize = process.env.NODE_ENV === 'production' ? new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
+export const sequelize = process.env.CLOUD_DEPLOYMENT ? new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
     host: `/cloudsql/${process.env.INSTANCE_CONNECTION_NAME}`,
     dialect: 'mysql',
     dialectOptions: {

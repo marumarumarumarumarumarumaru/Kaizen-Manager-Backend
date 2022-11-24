@@ -1,7 +1,7 @@
 import express from 'express'
 
-import {createUser, deleteUser, readUser, readUsers, updateUser} from "../controllers/user_controller.mjs"
-import {readUsersWorkspace} from "../controllers/workspaceUser_controller.mjs";
+import {createUser, deleteUser, readUser, readUserByEmail, readUsers, updateUser} from "../controllers/user_controller.mjs"
+import {deleteWorkspacesSolelyOwnedByUser, readUserRoleInWorkspace, readUsersWorkspace} from "../controllers/workspaceUser_controller.mjs";
 
 const router = express()
 
@@ -19,9 +19,9 @@ const router = express()
  *
  * Response Statuses
  * Success - 201 Created
- * Failure - 400 Bad Request - Missing a required attribute
+ * Failure - 400 Bad Request
  */
-router.post('/users', function (req, res) {
+router.post('/users', async function (req, res) {
     if (req.body.first_name == null ||
         req.body.last_name == null ||
         req.body.email == null) {
@@ -32,20 +32,19 @@ router.post('/users', function (req, res) {
             },
         )
     } else {
-        createUser({
+        await createUser({
             first_name: req.body.first_name,
             last_name: req.body.last_name,
             email: req.body.email
         })
-            .then(() => {
-                res.status(201).send()
-            })
+
+        res.status(201).send()
     }
 })
 
 
 /**
- * Endpoint to get a specific user
+ * Endpoint to get a specific user by id
  *
  * Request
  * Parameter passed via URL path
@@ -66,15 +65,47 @@ router.post('/users', function (req, res) {
  * Success - 200 OK
  * Failure - 404 Not Found
  */
-router.get('/users/:user_id', function (req, res) {
-    readUser(req.params.user_id)
-        .then(user => {
-            if (!user) {
-                res.status(404).json({'Error': 'No user with this user id exists'})
-            } else {
-                res.status(200).json(user)
-            }
-        })
+router.get('/users/:user_id', async function (req, res) {
+    const user = await readUser(req.params.user_id)
+
+    if (!user) {
+        res.status(404).json({'Error': 'No user with this user id exists'})
+    } else {
+        res.status(200).json(user)
+    }
+})
+
+
+/**
+ * Endpoint to get a specific user by email
+ *
+ * Request
+ * Parameter passed via request body
+ * @param email
+ *
+ * Response
+ * @returns user - JSON
+ * {
+ *     user_id: user id,
+ *     first_name: user first name,
+ *     last_name: user last name,
+ *     email: user email,
+ *     date_created: date user created,
+ *     date_updated: date user created
+ * }
+ *
+ * Response Statuses
+ * Success - 200 OK
+ * Failure - 404 Not Found
+ */
+router.post('/users/by-email', async function (req, res) {
+    const user = await readUserByEmail(req.body.email)
+
+    if (user) {
+        res.status(200).json(user)
+    } else {
+        res.status(404).send()
+    }
 })
 
 
@@ -97,13 +128,11 @@ router.get('/users/:user_id', function (req, res) {
  *
  * Response Statuses
  * Success - 200 OK
- * Failure - 403 Forbidden - The user doesn't have permission to view users of other workspaces
  */
-router.get('/users', function (req, res) {
-    readUsers()
-        .then(users => {
-            res.status(200).json(users)
-        })
+router.get('/users', async function (req, res) {
+    const users = await readUsers()
+
+    res.status(200).json(users)
 })
 
 
@@ -121,20 +150,24 @@ router.get('/users', function (req, res) {
  *     first_name: user first name,
  *     last_name: user last name,
  *     email: user email,
+ *     user_role: user's role in the workspace,
  *     date_created: date user created,
  *     date_updated: date user created
  * }
  *
  * Response Statuses
  * Success - 200 OK
- * Failure - 403 Forbidden - The user doesn't have permission to view users of other workspaces
+ * Failure - 403 Forbidden
  */
-router.get('/users/:user_id/workspaces/:workspace_id/users', function (req, res) {
-    // TODO - ADD AUTH
-    readUsersWorkspace(req.params.workspace_id)
-        .then(users => {
-            res.status(200).json(users)
-    })
+router.get('/users/:user_id/workspaces/:workspace_id/users', async function (req, res) {
+    const userRole = await readUserRoleInWorkspace(req.params.user_id, req.params.workspace_id)
+
+    if (userRole) {
+        const users = await readUsersWorkspace(req.params.workspace_id)
+        res.status(200).json(users)
+    } else {
+        res.status(403).send()
+    }
 })
 
 
@@ -157,28 +190,29 @@ router.get('/users/:user_id/workspaces/:workspace_id/users', function (req, res)
  * Success - 200 OK
  * Failure - 404 Not Found
  */
-router.patch('/users/:user_id', function (req, res) {
-    const userObj = {}
+router.patch('/users/:user_id', async function (req, res) {
+    const user = await readUser(req.params.user_id)
 
-    // Parse the request body to get only the attributes that are being updated
-    if (req.body.first_name) {
-        userObj.first_name = req.body.first_name
-    }
-    if (req.body.last_name) {
-        userObj.last_name = req.body.last_name
-    }
-    if (req.body.email) {
-        userObj.email = req.body.email
-    }
+    if (user) {
+        const userObj = {}
 
-    updateUser(req.params.user_id, userObj)
-        .then(success => {
-            if (success) {
-                res.status(200).json(success)
-            } else {
-                res.status(404).json({'Error': 'No user with this user id exists'})
-            }
-        })
+        // Parse the request body to get only the attributes that are being updated
+        if (req.body.first_name) {
+            userObj.first_name = req.body.first_name
+        }
+        if (req.body.last_name) {
+            userObj.last_name = req.body.last_name
+        }
+        if (req.body.email) {
+            userObj.email = req.body.email
+        }
+
+        await updateUser(req.params.user_id, userObj)
+
+        res.status(200).json(true)
+    } else {
+        res.status(404).json(false)
+    }
 })
 
 
@@ -192,15 +226,18 @@ router.patch('/users/:user_id', function (req, res) {
  * Success - 204 No Content
  * Failure - 404 Not Found
  */
-router.delete('/users/:user_id', function (req, res) {
-    deleteUser(req.params.user_id)
-        .then(success => {
-            if (success) {
-                res.status(204).end()
-            } else {
-                res.status(404).json({'Error': 'No user with this user id exists'})
-            }
-        })
+router.delete('/users/:user_id', async function (req, res) {
+    const user = await readUser(req.params.user_id)
+
+    if (user) {
+        await deleteWorkspacesSolelyOwnedByUser(req.params.user_id)
+
+        await deleteUser(req.params.user_id)
+
+        res.status(204).send()
+    } else {
+        res.status(404).json({'Error': 'No user with this user id exists'})
+    }
 })
 
 /* ------------- End Endpoint Functions ------------- */

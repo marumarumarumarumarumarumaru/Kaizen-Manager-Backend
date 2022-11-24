@@ -8,6 +8,7 @@ import {router as userRouter} from './routes/user.routes.mjs'
 import {router as workspaceRouter} from './routes/workspace.routes.mjs'
 import {router as projectRouter} from './routes/project.routes.mjs'
 import {router as taskRouter} from "./routes/task.routes.mjs"
+import {router as loginRouter} from "./routes/login.routes.mjs"
 
 const app = express()
 
@@ -22,6 +23,7 @@ app.use(userRouter)
 app.use(workspaceRouter)
 app.use(projectRouter)
 app.use(taskRouter)
+app.use(loginRouter)
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080
