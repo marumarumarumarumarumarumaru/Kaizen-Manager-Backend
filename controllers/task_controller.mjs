@@ -59,6 +59,11 @@ export async function createTask(task_obj) {
     return true
 }
 
+// For Testing Only
+export async function readAllTasks() {
+    return await Task.findAll()
+}
+
 // returns list of task objects from a project that were not marked as done before the previous two weeks
 export async function readTasksLastTwoWeeks(proj_id) {
     const tasks_in_timeframe = await Task.findAll(

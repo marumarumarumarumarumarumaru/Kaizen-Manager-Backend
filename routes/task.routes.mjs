@@ -1,6 +1,7 @@
 import express from 'express'
 
-import {createTask, deleteTask, readTask, readTasks, readTasksLastTwoWeeks, updateTask} from "../controllers/task_controller.mjs"
+import {createTask, deleteTask, readTask, readTasks, readAllTasks, readTasksLastTwoWeeks, updateTask} from "../controllers/task_controller.mjs"
+import {readUserRoleInWorkspace} from "../controllers/workspaceUser_controller.mjs";
 
 const router = express()
 
@@ -26,35 +27,40 @@ const router = express()
  *
  * Response Statuses
  * Success - 201 Created
- * Failure - 400 Bad Request - Missing a required attribute
+ * Failure - 400 Bad Request
+ * Failure - 403 Forbidden
  */
-router.post('/users/:user_id/workspaces/:workspace_id/projects/:project_id/tasks', function(req, res) {
-    // TODO CHECK AUTHORIZATION
-    if (req.body.task_name == null ||
-        req.body.task_value == null ||
-        req.body.task_status == null) {
-        res.status(400).json({
-                'Error':
-                    'The request object is missing at ' +
-                    'least one of the required attributes',
-            },
-        )
+router.post('/users/:user_id/workspaces/:workspace_id/projects/:project_id/tasks', async function(req, res) {
+    const userRole = await readUserRoleInWorkspace(req.params.user_id, req.params.workspace_id)
+
+    if (userRole) {
+        if (req.body.task_name == null ||
+            req.body.task_value == null ||
+            req.body.task_status == null) {
+            res.status(400).json({
+                    'Error':
+                        'The request object is missing at ' +
+                        'least one of the required attributes',
+                },
+            )
+        } else {
+            const taskObj = {}
+
+            taskObj.task_name = req.body.task_name
+            taskObj.task_value = req.body.task_value
+            taskObj.task_status = req.body.task_status
+            taskObj.proj_id = req.params.project_id
+            taskObj.task_assignee = req.body.task_assignee ? req.body.task_assignee : null
+            taskObj.task_descriptions = req.body.task_descriptions ? req.body.task_descriptions : null
+            taskObj.task_due_date = req.body.task_due_date ? req.body.task_due_date : null
+            taskObj.date_ended = null
+
+            await createTask(taskObj)
+
+            res.status(201).send()
+        }
     } else {
-        const taskObj = {}
-
-        taskObj.task_name = req.body.task_name
-        taskObj.task_value = req.body.task_value
-        taskObj.task_status = req.body.task_status
-        taskObj.proj_id = req.params.project_id
-        taskObj.task_assignee = req.body.task_assignee ? req.body.task_assignee : null
-        taskObj.task_descriptions = req.body.task_descriptions ? req.body.task_descriptions : null
-        taskObj.task_due_date = req.body.task_due_date ? req.body.task_due_date : null
-        taskObj.date_ended = null
-
-        createTask(taskObj)
-                .then(() => {
-                    res.status(201).send()
-            })
+        res.status(403).send()
     }
 })
 
@@ -85,22 +91,27 @@ router.post('/users/:user_id/workspaces/:workspace_id/projects/:project_id/tasks
  *
  * Response Statuses
  * Success - 200 OK
+ * Failure - 403 Forbidden
  * Failure - 404 Not Found
  */
-router.get('/users/:user_id/workspaces/:workspace_id/projects/:project_id/tasks/:task_id', function(req, res) {
-    readTask(req.params.project_id, req.params.task_id)
-        .then(task => {
-            if (!task) {
-                res.status(404).json({'Error': 'No task with this task id exists'})
-            } else {
-                res.status(200).json(task)
-            }
-        })
+router.get('/users/:user_id/workspaces/:workspace_id/projects/:project_id/tasks/:task_id', async function(req, res) {
+    const userRole = await readUserRoleInWorkspace(req.params.user_id, req.params.workspace_id)
+
+    if (userRole) {
+        const task = await readTask(req.params.project_id, req.params.task_id)
+        if (!task) {
+            res.status(404).json({'Error': 'No task with this task id exists'})
+        } else {
+            res.status(200).json(task)
+        }
+    } else {
+        res.status(403).send()
+    }
 })
 
 
 /**
- * Endpoint to get all tasks
+ * Endpoint to get all tasks in a project
  *
  * Request
  * Parameters passed via URL path
@@ -124,12 +135,45 @@ router.get('/users/:user_id/workspaces/:workspace_id/projects/:project_id/tasks/
  *
  * Response Statuses
  * Success - 200 OK
+ * Failure - 403 Forbidden
  */
-router.get('/users/:user_id/workspaces/:workspace_id/projects/:project_id/tasks', function(req, res) {
-    readTasks(req.params.project_id)
-        .then(tasks => {
-            res.status(200).json(tasks)
-        })
+router.get('/users/:user_id/workspaces/:workspace_id/projects/:project_id/tasks', async function(req, res) {
+    const userRole = await readUserRoleInWorkspace(req.params.user_id, req.params.workspace_id)
+
+    if (userRole) {
+        const tasks = await readTasks(req.params.project_id)
+
+        res.status(200).json(tasks)
+    } else {
+        res.status(403).send()
+    }
+})
+
+
+/**
+ * FOR TESTING ONLY - Endpoint to get all tasks
+ *
+ * Response
+ * @returns tasks - Array<JSON>
+ * {
+ *     task_id: task id,
+ *     task_name: task name,
+ *     task_value: task value,
+ *     task_status: task status,
+ *     task_assignee: id of the user assigned to the task,
+ *     task_descriptions: task descriptions,
+ *     task_due_date: task due date,
+ *     date_ended: date that the task was marked completed
+ *     proj_id: project id (foreign key)
+ * }
+ *
+ * Response Status
+ * Success - 200 OK
+ */
+router.get('/tasks', async function(req, res) {
+    const tasks = await readAllTasks()
+
+    res.status(200).json(tasks)
 })
 
 
@@ -149,11 +193,17 @@ router.get('/users/:user_id/workspaces/:workspace_id/projects/:project_id/tasks'
  * Success - 200 OK
  */
 // TODO - BETTER URL ENDPOINT NAMING, NEED TO BREAK DOWN THE VALUES BY DAY
-router.get('/users/:user_id/workspaces/:workspace_id/projects/:project_id/tasks/prev_two_weeks', function (req, res) {
-    readTasksLastTwoWeeks(req.params.project_id)
-        .then(tasks => {
-            res.status(200).json(tasks)
-        })
+router.get('/users/:user_id/workspaces/:workspace_id/projects/:project_id/tasks/prev_two_weeks', async function (req, res) {
+    const userRole = await readUserRoleInWorkspace(req.params.user_id, req.params.workspace_id)
+
+    if (userRole) {
+        const tasks = await readTasksLastTwoWeeks(req.params.project_id)
+
+        res.status(200).json(tasks)
+    } else {
+        res.status(403).send()
+    }
+
 })
 
 
@@ -181,42 +231,50 @@ router.get('/users/:user_id/workspaces/:workspace_id/projects/:project_id/tasks/
  *
  * Response Statuses
  * Success - 200 OK
+ * Failure - 403 Forbidden
  * Failure - 404 Not Found
  */
-router.patch('/users/:user_id/workspaces/:workspace_id/projects/:project_id/tasks/:task_id', function(req, res) {
-    const taskObj = {}
+router.patch('/users/:user_id/workspaces/:workspace_id/projects/:project_id/tasks/:task_id', async function(req, res) {
+    const userRole = await readUserRoleInWorkspace(req.params.user_id, req.params.workspace_id)
 
-    // Parse the request body to get only the attributes that are being updated
-    if (req.body.task_name) {
-        taskObj.task_name = req.body.task_name
-    }
-    if (req.body.task_value) {
-        taskObj.task_value = req.body.task_value
-    }
-    if (req.body.task_status) {
-        taskObj.task_status = req.body.task_status
-    }
-    if (req.body.task_assignee) {
-        taskObj.task_assignee = req.body.task_assignee
-    }
-    if (req.body.task_descriptions) {
-        taskObj.task_descriptions = req.body.task_descriptions
-    }
-    if (req.body.task_due_date) {
-        taskObj.task_due_date = req.body.task_due_date
-    }
-    if (req.body.date_ended) {
-        taskObj.date_ended = req.body.date_ended
-    }
+    if (userRole) {
+        const task = await readTask(req.params.project_id, req.params.task_id)
 
-    updateTask(req.params.task_id, taskObj)
-        .then(success => {
-            if (success) {
-                res.status(200).json(success)
-            } else {
-                res.status(404).json({'Error': 'No task with this task id exists'})
+        if (task) {
+            const taskObj = {}
+
+            // Parse the request body to get only the attributes that are being updated
+            if (req.body.task_name) {
+                taskObj.task_name = req.body.task_name
             }
-        })
+            if (req.body.task_value) {
+                taskObj.task_value = req.body.task_value
+            }
+            if (req.body.task_status) {
+                taskObj.task_status = req.body.task_status
+            }
+            if (req.body.task_assignee) {
+                taskObj.task_assignee = req.body.task_assignee
+            }
+            if (req.body.task_descriptions) {
+                taskObj.task_descriptions = req.body.task_descriptions
+            }
+            if (req.body.task_due_date) {
+                taskObj.task_due_date = req.body.task_due_date
+            }
+            if (req.body.date_ended) {
+                taskObj.date_ended = req.body.date_ended
+            }
+
+            await updateTask(req.params.task_id, taskObj)
+
+            res.status(200).json(true)
+        } else {
+            res.status(404).json(false)
+        }
+    } else {
+        res.status(403).send()
+    }
 })
 
 
@@ -232,17 +290,25 @@ router.patch('/users/:user_id/workspaces/:workspace_id/projects/:project_id/task
  *
  * Response Statuses
  * Success - 204 No Content
+ * Failure - 403 Forbidden
  * Failure - 404 Not Found
  */
-router.delete('/users/:user_id/workspaces/:workspace_id/projects/:project_id/tasks/:task_id', function(req, res) {
-    deleteTask(req.params.task_id)
-        .then(success => {
-            if (success) {
-                res.status(204).end()
-            } else {
-                res.status(404).json({'Error': 'No task with this task id exists'})
-            }
-    })
+router.delete('/users/:user_id/workspaces/:workspace_id/projects/:project_id/tasks/:task_id', async function(req, res) {
+    const userRole = await readUserRoleInWorkspace(req.params.user_id, req.params.workspace_id)
+
+    if (userRole) {
+        const task = await readTask(req.params.project_id, req.params.task_id)
+
+        if (task) {
+            await deleteTask(req.params.task_id)
+
+            res.status(204).send()
+        } else {
+            res.status(404).json({'Error': 'No task with this task id exists'})
+        }
+    } else {
+        res.status(403).send()
+    }
 })
 
 /* ------------- End Endpoint Functions ------------- */

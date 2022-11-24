@@ -38,5 +38,5 @@ db.workspace = Workspace;
 db.workspaceUser = workspaceUser;
 
 
-await db.sequelize.sync({ force: true });
+await db.sequelize.sync()
   

@@ -49,3 +49,12 @@ export async function readUser(user_id) {
 export async function readUsers() {
     return await User.findAll()
 }
+
+export async function readUserByEmail(user_email) {
+    const result = await User.findAll({
+        where: {
+            email: user_email
+        }
+    })
+    return result[0]
+}

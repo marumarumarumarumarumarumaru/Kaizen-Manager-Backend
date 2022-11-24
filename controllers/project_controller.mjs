@@ -52,3 +52,8 @@ export async function readProjects(workspace_id) {
         }
     })
 }
+
+// For Testing Only
+export async function readAllProjects() {
+    return await Project.findAll()
+}

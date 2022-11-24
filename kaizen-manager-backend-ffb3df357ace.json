@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "kaizen-manager-backend",
+  "private_key_id": "ffb3df357ace87c8c3349d030717a31bdd0256f1",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDPf1YjaioQ8Uau\n5hh1MCEGshWHLW+Oxxx9VQh3mTQAXG1YdwEMwcpe8HgtfobGN5IdASoYA5IQPAbS\nLWg8gMb0MDvMmtr+5jK/34XbNSSJkowbaqAAEXDCbrOlzbwtrdfJPx+vnvA939Jd\nx5sXn8ZgIlvOzFF5x6oyM29/8AnVcokQYCnbC7bdmon2G39cQDITxxGWuUafj4a4\nAW6I2OdnkPIA/6aBgmZruhFE9veezYBQ6XISnjLiNC8jBDtylNwQEOQ+qSU4aLYV\nc3tJ24E+WODlUuAH/l519OsHQXj+iqkL3IBcZ2/Mx99InLxztLCzmvJZvcPOXaiQ\nzOJ0ujkTAgMBAAECggEAAdWy6cpBB/hSMy62raaYzCnb9d+Jen45OsR7OC+DHbOz\nhdI7kKTQCMngjiptv6fzI02E1USG0JzvRIGBR/OtjrA0fykpYZKghUDROrB8G7lP\ngtiNBKMi151J+l/Y16CPZWio+5EQt8NYZVrj/K/9fZEgNbJp0AVbdGkvBbcWJyyB\nhGeCzEwLQRxrOvmkRRtskacKGJ1z5RrW9IEZkgOZZAHVT/zQWbnogtrjMO65crxK\nbw1xSrErvSZMAmM3qoI1YKM15U+Rlt2BN+I7tHTpZuz7nMqIPMEAcOW2Y6V8doCr\nN++4gPJftFa7f/fNJntlrErS5RzEXAfsYuTwtEtB4QKBgQDwUPKjgSI3bBRvQBXY\na6tKcbRBJ4X/qrQkUrscAjfbpbpwvTTtaBgFzaS2A+9DAip+MXyR6LP1tcAHf2n0\nLn5nhgzhAK7z7S4aP10meYGGaTS/V25KayBx0Bjt1vSlQl+vShee9aFEXhZPJhqX\nWa0iBMEuEIGnBI08KbFEu7euswKBgQDdChKnWOCj0fjPqJrb11DLxLQq7U0doGCM\nbocB2rWhPvpeAM82UhFCBQ7uOALmG1D8q4SUHxu/IWTYCm69x1iMdlGG4I+NNYqH\nyROkPy6HYlWXYhhB/mPpmaSkdQyAsGctngNqfnZdem2abXl6dQLZstPw7po4REcS\nlcpJ59p8IQKBgQCkUfVXL5lB5DkkyOEnFpgNUyo50tihNQvwOlGOmUWwfuW46Ocj\n3iVu8mpJuu8DFpwPpa7T5hYHULt5ZPoB6TiteM+dmmYGjIsVj3YWNMcILS/QFexo\nHlAVAoHJP04RIg1jQnpcSwB2Sw9eF2PfUYY82Jtu8AJ3PXmFRczcfq7eWQKBgD6f\nJu/AT0w6JXp3cwALfTltjfmHZ0yYbiH7Aka1NrXrCLVvF0V1dKw2kKdOuQuF+6jJ\n0vK/6XV5uX83XW5otp58utYycpj37TpQ7j6fI8h5RHRx9xtjPd0liS6KdrNSxrh2\nxtL55wDOuZSBpWPbGKaickcU4h5EwbnzM+9CP3ThAoGAfjTB1d1s1RyC6oj+IP9l\ne+ZTkVPyYWCkABSPpRmBWqBp/C6bpuOkNzoJkFNCS4zsmSDI8BZR+v6EY1ZOwQJA\nUfA5AmUlD+CQnUZZbnWsSFy8L4XOkzlU1utOWDz0MKkph419LTZe8uWlWPQ2dPGe\n4OzrvA2bNJuHfALF+bikN0Y=\n-----END PRIVATE KEY-----\n",
+  "client_email": "kaizen-manager-backend@appspot.gserviceaccount.com",
+  "client_id": "105586713601285483604",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/kaizen-manager-backend%40appspot.gserviceaccount.com"
+}
