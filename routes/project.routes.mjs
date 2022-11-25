@@ -20,6 +20,16 @@ const router = express()
  * Parameters passed via request body
  * @param project_name - required
  *
+ * Response
+ * @returns project - JSON
+ * {
+ *     project_id: project id,
+ *     project_name: project name,
+ *     work_id: workspace id (foreign key),
+ *     date_created: date project created,
+ *     date_updated: date project created
+ * }
+ *
  * Response Statuses
  * Success - 201 Created
  * Failure - 400 Bad Request
@@ -37,11 +47,12 @@ router.post('/users/:user_id/workspaces/:workspace_id/projects', async function 
                 },
             )
         } else {
-            await createProject({
+            const newProject = await createProject({
                 project_name: req.body.project_name,
                 work_id: req.params.workspace_id
             })
-            res.status(201).send()
+
+            res.status(201).json(newProject)
         }
     } else {
         res.status(403).send()

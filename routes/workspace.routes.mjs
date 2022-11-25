@@ -20,6 +20,15 @@ const router = express()
  * Parameters passed via request body
  * @param workspace_name - required
  *
+ * Response
+ * @returns workspace - JSON
+ * {
+ *     workspace_id: workspace id,
+ *     workspace_name: workspace name,
+ *     date_created: date workspace created,
+ *     date_updated: date workspace created
+ * }
+ *
  * Response Statuses
  * Success - 201 Created
  * Failure - 400 Bad Request
@@ -33,12 +42,12 @@ router.post('/users/:user_id/workspaces/', async function (req, res) {
             },
         )
     } else {
-        await createWorkspace({
+        const newWorkspace = await createWorkspace({
             workspace_name: req.body.workspace_name,
             use_id: req.params.user_id
         })
 
-        res.status(201).send()
+        res.status(201).json(newWorkspace)
     }
 })
 

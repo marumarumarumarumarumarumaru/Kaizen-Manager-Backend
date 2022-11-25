@@ -14,15 +14,13 @@ export async function deleteUser(user_id_num) {
 }
 
 export async function createUser(user_obj) {
-    await User.create({
+    return await User.create({
         first_name: user_obj.first_name,
         last_name: user_obj.last_name,
         email: user_obj.email
     }).catch((err) => {
         console.log(err)
-        return false
     })
-    return true
 }
 
 export async function updateUser(user_id, user_obj) {

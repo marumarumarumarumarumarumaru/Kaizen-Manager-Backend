@@ -25,6 +25,20 @@ const router = express()
  * @param task_descriptions - optional
  * @param task_due_date - optional
  *
+ * Response
+ * @returns task - JSON
+ * {
+ *     task_id: task id,
+ *     task_name: task name,
+ *     task_value: task value,
+ *     task_status: task status,
+ *     task_assignee: id of the user assigned to the task,
+ *     task_descriptions: task descriptions,
+ *     task_due_date: task due date,
+ *     date_ended: date that the task was marked completed
+ *     proj_id: project id (foreign key)
+ * }
+ *
  * Response Statuses
  * Success - 201 Created
  * Failure - 400 Bad Request
@@ -55,9 +69,9 @@ router.post('/users/:user_id/workspaces/:workspace_id/projects/:project_id/tasks
             taskObj.task_due_date = req.body.task_due_date ? req.body.task_due_date : null
             taskObj.date_ended = null
 
-            await createTask(taskObj)
+            const newTask = await createTask(taskObj)
 
-            res.status(201).send()
+            res.status(201).json(newTask)
         }
     } else {
         res.status(403).send()
