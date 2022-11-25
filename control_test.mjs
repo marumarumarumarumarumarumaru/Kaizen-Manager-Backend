@@ -1,4 +1,4 @@
-import {createTask, updateTask, deleteTask, readTasksLastTwoWeeks, readTasks} from './controllers/task_controller.mjs'
+import {createTask, updateTask, deleteTask, readTasksInTimeframe, readTasks} from './controllers/task_controller.mjs'
 import {createUser, updateUser, deleteUser, readUser} from './controllers/user_controller.mjs'
 import {createProject, updateProject, deleteProject, readProjects} from './controllers/project_controller.mjs'
 import {createWorkspace, updateWorkspace, deleteWorkspace, readWorkspace} from './controllers/workspace_controller.mjs'
@@ -122,6 +122,12 @@ function create_date_previous(){
     return d
 }
 
+function create_date_in_range(){
+    let d = new Date()
+    d.setDate(d.getDate()-2)
+    return d
+}
+
 async function test_update_user_role(){
     await updateUserInWorkspace(1,1,{role_name: 'member'})
 }
@@ -166,9 +172,36 @@ async function test_delete_cascading_workspace(){
 }
 
 async function test_metrics(){
+    await createTask({proj_id: 1,
+        task_name: `taskshown`,
+        task_due_date: 2,
+        task_assignee: 1,
+        task_status: "complete", 
+        task_value: 12,
+        date_ended: create_date_in_range(),
+        task_descriptions:"get a job"
+    })
+    await createTask({proj_id: 1,
+        task_name: `taskshown2`,
+        task_due_date: 2,
+        task_assignee: 1,
+        task_status: "complete", 
+        task_value: 12848,
+        date_ended: create_date_in_range(),
+        task_descriptions:"build a chair"
+    })
+    await createTask({proj_id: 1,
+        task_name: `OUT Range taskshown2`,
+        task_due_date: 2,
+        task_assignee: 1,
+        task_status: "complete", 
+        task_value: 12848,
+        date_ended: create_date_previous(),
+        task_descriptions:"build a chair"
+    })
     console.log('tasks in date range')
     console.log('------------------------------------------')
-    console.log(await readTasksLastTwoWeeks(1))
+    console.log(await readTasksInTimeframe(1,3))
     console.log('All tasks')
     console.log('------------------------------------------')
     console.log(await readTasks(1))

@@ -65,7 +65,7 @@ export async function readAllTasks() {
 }
 
 // returns list of task objects from a project that were not marked as done before the previous two weeks
-export async function readTasksLastTwoWeeks(proj_id) {
+export async function readTasksInTimeframe(proj_id, timeframe) {
     const tasks_in_timeframe = await Task.findAll(
         {where: {proj_id: proj_id}}
     ).catch((err) => {
@@ -75,7 +75,7 @@ export async function readTasksLastTwoWeeks(proj_id) {
     for (const task of tasks_in_timeframe) {
         let date_ended = task.dataValues.date_ended
         let cutoff_date = new Date()
-        cutoff_date.setDate(cutoff_date.getDate() - 14)
+        cutoff_date.setDate(cutoff_date.getDate() - timeframe)
         if (date_ended >= cutoff_date) {
             tasks.push(task.dataValues)
         }
