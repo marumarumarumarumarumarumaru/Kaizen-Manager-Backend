@@ -15,27 +15,21 @@ export async function deleteWorkspace(workspace_id_num) {
 }
 
 export async function createWorkspace(workspace_obj) {
-    await Workspace.create({
-            workspace_name: workspace_obj.workspace_name
-        }
-    )
-    //get the next project_id
-    let workspace = await Workspace.findAll({
-        attributes: [[sequelize.fn('MAX', sequelize.col('workspace_id')), 'max_id']],
-        raw: true
+    const workspace = await Workspace.create({
+        workspace_name: workspace_obj.workspace_name
+    }).catch((err) => {
+        console.log(err)
     })
+
     await workspaceUser.create({
         user_user_id: workspace_obj.use_id,
         role_name: "owner",
-        workspace_workspace_id: workspace[0].max_id// need to get the newly created workspace id here CPK
+        workspace_workspace_id: workspace.dataValues.workspace_id// need to get the newly created workspace id here CPK
     }).catch((err) => {
         console.log(err)
-        return false
-    }).catch((err) => {
-        console.log(err)
-        return false
     })
-    return true
+
+    return workspace
 }
 
 

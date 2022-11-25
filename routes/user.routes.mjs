@@ -17,6 +17,17 @@ const router = express()
  * @param last_name - required
  * @param email - required
  *
+ * Response
+ * @returns user - JSON
+ * {
+ *     user_id: user id,
+ *     first_name: user first name,
+ *     last_name: user last name,
+ *     email: user email,
+ *     date_created: date user created,
+ *     date_updated: date user created
+ * }
+ *
  * Response Statuses
  * Success - 201 Created
  * Failure - 400 Bad Request
@@ -32,13 +43,13 @@ router.post('/users', async function (req, res) {
             },
         )
     } else {
-        await createUser({
+        const newUser = await createUser({
             first_name: req.body.first_name,
             last_name: req.body.last_name,
             email: req.body.email
         })
 
-        res.status(201).send()
+        res.status(201).json(newUser)
     }
 })
 

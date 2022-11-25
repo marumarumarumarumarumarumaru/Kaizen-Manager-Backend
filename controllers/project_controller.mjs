@@ -4,15 +4,13 @@ import {Sequelize} from 'sequelize'
 const Op = Sequelize.Op;
 
 export async function createProject(project_obj) {
-    await Project.create({
+    return await Project.create({
         project_name: project_obj.project_name,
         work_id: project_obj.work_id
     })
         .catch((err) => {
             console.log(err)
-            return false
         })
-    return true
 }
 
 export async function deleteProject(project_id_num) {

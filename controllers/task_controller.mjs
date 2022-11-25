@@ -43,7 +43,7 @@ export async function deleteTask(task_id_num) {
 }
 
 export async function createTask(task_obj) {
-    await Task.create({
+    return await Task.create({
         proj_id: task_obj.proj_id, //FK
         task_assignee: task_obj.task_assignee,
         task_name: task_obj.task_name,
@@ -54,9 +54,7 @@ export async function createTask(task_obj) {
         date_ended: task_obj.date_ended
     }).catch((err) => {
         console.log(err)
-        return false
     })
-    return true
 }
 
 // For Testing Only
