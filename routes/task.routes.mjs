@@ -1,6 +1,6 @@
 import express from 'express'
 
-import {createTask, deleteTask, readTask, readTasks, readAllTasks, readTasksLastTwoWeeks, updateTask} from "../controllers/task_controller.mjs"
+import {createTask, deleteTask, readTask, readTasks, readAllTasks, updateTask, readTasksInTimeframe} from "../controllers/task_controller.mjs"
 import {readUserRoleInWorkspace} from "../controllers/workspaceUser_controller.mjs";
 
 const router = express()
@@ -197,7 +197,7 @@ router.get('/users/:user_id/workspaces/:workspace_id/projects/:project_id/tasks/
     const userRole = await readUserRoleInWorkspace(req.params.user_id, req.params.workspace_id)
 
     if (userRole) {
-        const tasks = await readTasksLastTwoWeeks(req.params.project_id)
+        const tasks = await readTasksInTimeframe(req.params.project_id, 3)
 
         res.status(200).json(tasks)
     } else {
