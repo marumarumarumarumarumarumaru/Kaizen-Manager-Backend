@@ -1,4 +1,5 @@
-import express from 'express'
+import express from "express"
+import json2csv from "json2csv"
 
 import {createTask, deleteTask, readTask, readTasks, readAllTasks, updateTask, readTasksInTimeframe} from "../controllers/task_controller.mjs"
 import {readUserRoleInWorkspace} from "../controllers/workspaceUser_controller.mjs";
@@ -200,24 +201,57 @@ router.get('/tasks', async function(req, res) {
  * @param workspace_id
  * @param project_id
  *
- * Response
- * @returns cumulative task value per day - Array<Number>
+ * Parameters passed via request body
+ * @param projects - 1 or more required
+ * @param duration - required
+ * @param format - optional
+ *
+ * Response - JSON option
+ * @returns tasks - Array<JSON>
+ * {
+ *     task_id: task id,
+ *     task_name: task name,
+ *     task_value: task value,
+ *     task_status: task status,
+ *     task_assignee: id of the user assigned to the task,
+ *     task_descriptions: task descriptions,
+ *     task_due_date: task due date,
+ *     date_ended: date that the task was marked completed
+ *     proj_id: project id (foreign key)
+ * }
+ *
+ * Response - CSV option
+ * @returns tasks - CSV Table
+ * Columns: task_id, task_name, task_value, task_status, task_assignee, task_descriptions, task_due_date, date_ended, proj_id
  *
  * Response Statuses
  * Success - 200 OK
+ * Failure - 400 Bad Request
+ * Failure - 403 Forbidden
  */
-// TODO - BETTER URL ENDPOINT NAMING, NEED TO BREAK DOWN THE VALUES BY DAY
-router.get('/users/:user_id/workspaces/:workspace_id/projects/:project_id/tasks/prev_two_weeks', async function (req, res) {
+router.post('/users/:user_id/workspaces/:workspace_id/tasks/metrics', async function (req, res) {
     const userRole = await readUserRoleInWorkspace(req.params.user_id, req.params.workspace_id)
 
     if (userRole) {
-        const tasks = await readTasksInTimeframe(req.params.project_id, 3)
+        if (req.body.projects && req.body.duration) {
+            const tasks = []
 
-        res.status(200).json(tasks)
+            for (const project of req.body.projects) {
+                tasks.push(...await readTasksInTimeframe(project, req.body.duration))
+            }
+
+            if (req.body.format === 'csv') {
+                const csv = json2csv.parse(tasks)
+                res.status(200).contentType("text/csv").send(csv)
+            } else {
+                res.status(200).json(tasks)
+            }
+        } else {
+            res.status(400).send()
+        }
     } else {
         res.status(403).send()
     }
-
 })
 
 
