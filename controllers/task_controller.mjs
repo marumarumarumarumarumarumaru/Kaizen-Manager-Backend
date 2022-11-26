@@ -74,8 +74,8 @@ export async function readTasksInTimeframe(proj_id, timeframe) {
         let date_ended = task.dataValues.date_ended
         let cutoff_date = new Date()
         cutoff_date.setDate(cutoff_date.getDate() - timeframe)
-        if (date_ended >= cutoff_date) {
-            tasks.push(task.dataValues)
+        if (!date_ended || date_ended >= cutoff_date) {
+            tasks.push(task)
         }
     }
     return tasks
