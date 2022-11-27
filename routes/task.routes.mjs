@@ -205,6 +205,9 @@ router.get('/tasks', async function(req, res) {
  * @param projects - 1 or more required
  * @param duration - required
  *
+ * Request Headers:
+ * accept - 'application/json', 'text/csv' - formats response to JSON or CSV
+ *
  * Response Body Formats:
  * JSON
  * CSV
