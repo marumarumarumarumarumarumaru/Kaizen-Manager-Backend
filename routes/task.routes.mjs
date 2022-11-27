@@ -204,9 +204,15 @@ router.get('/tasks', async function(req, res) {
  * Parameters passed via request body
  * @param projects - 1 or more required
  * @param duration - required
- * @param format - optional
  *
- * Response - JSON option
+ * Request Headers:
+ * accept - 'application/json', 'text/csv' - formats response to JSON or CSV
+ *
+ * Response Body Formats:
+ * JSON
+ * CSV
+ *
+ * Response - JSON
  * @returns tasks - Array<JSON>
  * {
  *     task_id: task id,
@@ -220,7 +226,7 @@ router.get('/tasks', async function(req, res) {
  *     proj_id: project id (foreign key)
  * }
  *
- * Response - CSV option
+ * Response - CSV
  * @returns tasks - CSV Table
  * Columns: task_id, task_name, task_value, task_status, task_assignee, task_descriptions, task_due_date, date_ended, proj_id
  *
@@ -240,7 +246,7 @@ router.post('/users/:user_id/workspaces/:workspace_id/tasks/metrics', async func
                 tasks.push(...await readTasksInTimeframe(project, req.body.duration))
             }
 
-            if (req.body.format === 'csv') {
+            if (req.get('accept') === 'text/csv') {
                 const csv = json2csv.parse(tasks)
                 res.status(200).contentType("text/csv").send(csv)
             } else {
