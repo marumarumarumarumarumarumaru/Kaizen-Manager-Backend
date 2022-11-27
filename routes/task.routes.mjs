@@ -1,8 +1,8 @@
-import express from "express"
-import json2csv from "json2csv"
+import express from 'express'
+import json2csv from 'json2csv'
 
-import {createTask, deleteTask, readTask, readTasks, readAllTasks, updateTask, readTasksInTimeframe} from "../controllers/task_controller.mjs"
-import {readUserRoleInWorkspace} from "../controllers/workspaceUser_controller.mjs";
+import {createTask, deleteTask, readTask, readTasks, readAllTasks, updateTask, readTasksInTimeframe} from '../controllers/task_controller.mjs'
+import {readUserRoleInWorkspace} from '../controllers/workspaceUser_controller.mjs';
 
 const router = express()
 
@@ -247,8 +247,12 @@ router.post('/users/:user_id/workspaces/:workspace_id/tasks/metrics', async func
             }
 
             if (req.get('accept') === 'text/csv') {
-                const csv = json2csv.parse(tasks)
-                res.status(200).contentType("text/csv").send(csv)
+                if (tasks) {
+                    const csv = json2csv.parse(tasks)
+                    res.status(200).contentType('text/csv').send(csv)
+                } else {
+                    res.status(200).contentType('text/csv').send("")
+                }
             } else {
                 res.status(200).json(tasks)
             }
