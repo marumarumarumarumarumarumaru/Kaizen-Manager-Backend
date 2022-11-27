@@ -247,7 +247,7 @@ router.post('/users/:user_id/workspaces/:workspace_id/tasks/metrics', async func
             }
 
             if (req.get('accept') === 'text/csv') {
-                if (tasks) {
+                if (tasks.length > 0) {
                     const csv = json2csv.parse(tasks)
                     res.status(200).contentType('text/csv').send(csv)
                 } else {
