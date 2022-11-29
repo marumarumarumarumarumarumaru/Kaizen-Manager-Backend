@@ -207,16 +207,10 @@ async function test_metrics(){
     console.log(await readTasks(1))
 }
 
-// these functions are uncommented and run one by one to test functionality 
-// of the db
 
-
-// test_updates()
-// test_user_workspace()
-// test_update_user_role()
-
-// create a fresh db for this one
-// test_delete_cascading_workspace()
-// test_reads_user_workspace()
-// test_metrics()
+test_updates()
+test_user_workspace()
+test_update_user_role()
+test_reads_user_workspace()
+test_metrics()
 
